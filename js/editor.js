@@ -7,12 +7,12 @@ c.height = 1024;
 const t = document.getElementById('texturePicker');
 const tCtx = t.getContext('2d');
 
-t.width = 256;
-t.height = tileSize;
-
+var globalTileSize = globalTileSize || 64;
 var painting = false;
 
 const Map = function(mapSize, tileSize) {
+    globalTileSize = tileSize;
+
     var xPos = 0;
     var yPos = 0;
 
@@ -38,6 +38,8 @@ const Map = function(mapSize, tileSize) {
 
 const TexturePicker = function(map, sheets) {
     var self = this;
+
+    t.width = globalTileSize * 3;
 
     var xPos = 0;
     var yPos = 0;
