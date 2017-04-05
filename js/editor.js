@@ -4,13 +4,8 @@ const ctx = c.getContext('2d');
 c.width = 1024;
 c.height = 1024;
 
-// Add sources to texture sheets here:
-const textureSheets = ['images/texture_sheet_01.png', 'images/texture_sheet_02.png'];
-
 const t = document.getElementById('texturePicker');
 const tCtx = t.getContext('2d');
-
-const tileSize = 64;
 
 t.width = 256;
 t.height = tileSize;
@@ -29,7 +24,7 @@ const Map = function(mapSize, tileSize) {
                 xPos = 0; yPos += this.tileSize;
             }
 
-            // Draw tile
+            // Draw empty tile
             ctx.fillStyle = 'white';
             ctx.fillRect(xPos, yPos, this.tileSize, this.tileSize);
             ctx.strokStyle = 'white';
@@ -100,7 +95,6 @@ const TexturePicker = function(map, sheets) {
                 }
                 console.log('Drew [ ' + nrOfTiles + ' ] textures');
             });
-
         }
         console.log('Drew [ ' + i + ' ] texture-tiles');
     };
@@ -127,7 +121,6 @@ const TexturePicker = function(map, sheets) {
         // Paint a selection border around the currently selected tile
         tCtx.strokeStyle = 'black';
         tCtx.strokeRect(selectX + 1, selectY + 1, tileSize - 2, tileSize - 2);
-
     };
 
     this.paint = function(e) {

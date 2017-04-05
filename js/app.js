@@ -1,6 +1,14 @@
 window.onload = function() {
-    // Define map and textures
+    // Define tileSize
+    const tileSize = 64;
+
+    // Define map
     const map = new Map(256, tileSize);
+
+    // Add sources to texture sheets here:
+    const textureSheets = ['images/texture_sheet_01.png', 'images/texture_sheet_02.png'];
+
+    // Define texture picker
     const textures = new TexturePicker(map, textureSheets);
 
     map.generateTiles();
