@@ -48,7 +48,7 @@ const TexturePicker = function(map, sheets) {
     var yPos = 0;
 
     var tileSize = map.tileSize;
-    var storedTex;
+    var storedTex = { data: null, x: null, y: null };
 
     this.createTextureSheet = function(src, callback) {
         var sheet = new Image();
@@ -59,7 +59,6 @@ const TexturePicker = function(map, sheets) {
             var h = sheet.height;
 
             var nrOfTiles = (w/tileSize) * (h/tileSize);
-
             callback(sheet, nrOfTiles)
         };
     };
@@ -110,36 +109,40 @@ const TexturePicker = function(map, sheets) {
         var mouseX = e.layerX;
         var mouseY = e.layerY;
 
-        var gridX = 0;
-        var gridY = 0;
-
         var selectX, selectY;
 
-        for (mouseX; mouseX > gridX; gridX+=tileSize) selectX = gridX;
-        for (mouseY; mouseY > gridY; gridY+=tileSize) selectY = gridY;
+        for (var gridX = 0; mouseX > gridX; gridX+=tileSize) selectX = gridX;
+        for (var gridY = 0; mouseY > gridY; gridY+=tileSize) selectY = gridY;
 
         console.log(selectX, selectY);
 
-        storedTex = tCtx.getImageData(selectX, selectY, tileSize, tileSize);
+        // Check if tile has already been selected, then redraw the previous selection
+        if (storedTex.data) tCtx.putImageData(storedTex.data, storedTex.x, storedTex.y);
+
+        // Store the data of the texture and it's position
+        storedTex.data = tCtx.getImageData(selectX, selectY, tileSize, tileSize);
+        storedTex.x = selectX;
+        storedTex.y = selectY;
+
+        // Paint a selection border around the currently selected tile
+        tCtx.strokeStyle = 'black';
+        tCtx.strokeRect(selectX + 1, selectY + 1, tileSize - 2, tileSize - 2);
 
     };
 
     this.paint = function(e) {
-        if (painting && storedTex) {
+        if (painting && storedTex.data) {
             var mouseX = e.layerX;
             var mouseY = e.layerY;
 
-            var gridX = 0;
-            var gridY = 0;
-
             var selectX, selectY;
 
-            for (mouseX; mouseX > gridX; gridX+=tileSize) selectX = gridX;
-            for (mouseY; mouseY > gridY; gridY+=tileSize) selectY = gridY;
+            for (var gridX = 0; mouseX > gridX; gridX+=tileSize) selectX = gridX;
+            for (var gridY = 0; mouseY > gridY; gridY+=tileSize) selectY = gridY;
 
             console.log(selectX, selectY);
 
-            ctx.putImageData(storedTex, selectX, selectY);
+            ctx.putImageData(storedTex.data, selectX, selectY);
         }
     };
 };
