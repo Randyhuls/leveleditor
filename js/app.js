@@ -16,7 +16,12 @@ window.onload = function() {
 
     // Events - TODO: needs to be properly moved to the editor and work regardless of the instance
     t.addEventListener('click', textures.selectTexture);
-    c.addEventListener('mousedown', function() { painting = true; });
+
+    c.addEventListener('mousedown', function(e) { painting = true; textures.paint(e)});
     c.addEventListener('mouseup', function() { painting = false; });
     c.addEventListener('mousemove', textures.paint);
+
+    saveMapBtn.addEventListener('click', function() {
+        map.save();
+    });
 };

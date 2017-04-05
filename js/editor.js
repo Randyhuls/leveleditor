@@ -1,3 +1,5 @@
+const saveMapBtn = document.getElementById('saveMapBtn');
+
 const c = document.getElementById('canvas');
 const ctx = c.getContext('2d');
 
@@ -8,10 +10,23 @@ const t = document.getElementById('texturePicker');
 const tCtx = t.getContext('2d');
 
 var globalTileSize = globalTileSize || 64;
+var globalMapSize;
 var painting = false;
+
+var layer = 1;
+var mapArray = [];
+
+const Tile = function(imgData, id, layer, sheetPos, mapPos) {
+    this.imgData = imgData;
+    this.id = id;
+    this.layer = layer;
+    this.sheetPos = sheetPos;
+    this.mapPos = mapPos;
+};
 
 const Map = function(mapSize, tileSize) {
     globalTileSize = tileSize;
+    globalMapSize = mapSize;
 
     var xPos = 0;
     var yPos = 0;
@@ -24,6 +39,10 @@ const Map = function(mapSize, tileSize) {
                 xPos = 0; yPos += this.tileSize;
             }
 
+            // Create new tile object
+            var newTile = new Tile(null, i, 1, null, {x: xPos, y: yPos});
+            mapArray.push(newTile);
+
             // Draw empty tile
             ctx.fillStyle = 'white';
             ctx.fillRect(xPos, yPos, this.tileSize, this.tileSize);
@@ -32,8 +51,20 @@ const Map = function(mapSize, tileSize) {
 
             xPos += this.tileSize;
         }
-        console.log('Drew [ ' + i + ' ] tiles');
+        console.log('Drew [ ' + i + ' ] tiles', mapArray);
     };
+
+    this.save = function() {
+        console.log('saving map. . .');
+        for (var i = 0; i < mapArray.length; i++) {
+            var tile = mapArray[i];
+            tile.imgData = ctx.getImageData(0, 0, tileSize, tileSize);
+        }
+
+        var newMapFile = new Blob([btoa(mapArray.toString())], {type: 'text/json'});
+
+        console.log(newMapFile);
+    }
 };
 
 const TexturePicker = function(map, sheets) {
@@ -43,6 +74,9 @@ const TexturePicker = function(map, sheets) {
 
     var xPos = 0;
     var yPos = 0;
+
+    var mapWidth = 0;
+    var mapHeight = 0;
 
     var tileSize = map.tileSize;
     var storedTex = { data: null, x: null, y: null };
@@ -95,6 +129,10 @@ const TexturePicker = function(map, sheets) {
                     xSheetPos += tileSize;
                     xPos += tileSize;
                 }
+                // Assign map width and height to global variables
+                mapWidth += xSheetPos;
+                mapHeight += ySheetPos;
+                console.log(mapWidth, mapHeight);
                 console.log('Drew [ ' + nrOfTiles + ' ] textures');
             });
         }
@@ -110,7 +148,7 @@ const TexturePicker = function(map, sheets) {
         for (var gridX = 0; mouseX > gridX; gridX+=tileSize) selectX = gridX;
         for (var gridY = 0; mouseY > gridY; gridY+=tileSize) selectY = gridY;
 
-        console.log(selectX, selectY);
+        //console.log(selectX, selectY);
 
         // Check if tile has already been selected, then redraw the previous selection
         if (storedTex.data) tCtx.putImageData(storedTex.data, storedTex.x, storedTex.y);
@@ -135,9 +173,11 @@ const TexturePicker = function(map, sheets) {
             for (var gridX = 0; mouseX > gridX; gridX+=tileSize) selectX = gridX;
             for (var gridY = 0; mouseY > gridY; gridY+=tileSize) selectY = gridY;
 
-            console.log(selectX, selectY);
+            //console.log(selectX, selectY);
 
-            ctx.putImageData(storedTex.data, selectX, selectY);
+            if (selectX < (globalMapSize * globalTileSize) && selectY < (globalMapSize * globalTileSize)) {
+                ctx.putImageData(storedTex.data, selectX, selectY);
+            }
         }
     };
 };
