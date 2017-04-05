@@ -14,7 +14,7 @@ window.onload = function() {
     map.generateTiles();
     textures.generateTextures();
 
-    // Events
+    // Events - TODO: needs to be properly moved to the editor and work regardless of the instance
     t.addEventListener('click', textures.selectTexture);
     c.addEventListener('mousedown', function() { painting = true; });
     c.addEventListener('mouseup', function() { painting = false; });
